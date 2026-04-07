@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Espace ORAH – Pause émotionnelle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Un espace doux pour respirer, s'ancrer et calmer la vague émotionnelle." />
+  <meta name="theme-color" content="#241335" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Espace ORAH" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta property="og:title" content="Espace ORAH – Pause émotionnelle" />
+  <meta property="og:description" content="Quand tout est trop : respire, ancre-toi, et reviens à toi." />
+  <meta property="og:type" content="website" />
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #7d5cff 0, #241335 40%, #080612 100%);
+      color: #fdfbff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      transition: filter 0.4s ease;
+    }
+
+    body.night-mode { filter: brightness(0.45) saturate(0.7); }
+
+    .shell {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ─── NIGHT MODE TOGGLE ─── */
+    .night-toggle {
+      position: fixed;
+      top: 12px;
+      right: 14px;
+      z-index: 900;
+      background: rgba(13, 7, 30, 0.85);
+      border: 1px solid rgba(163, 140, 255, 0.3);
+      color: #fdfbff;
+      font-size: 18px;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .night-toggle:hover { background: rgba(163, 140, 255, 0.2); border-color: rgba(163,140,255,0.6); }
+
+    /* ─── ONBOARDING ─── */
+    #onboarding {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(8, 6, 18, 0.97);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: fadeIn 0.4s ease;
+    }
+    #onboarding.hidden { display: none; }
+
+    .onboarding-card {
+      max-width: 480px;
+      width: 100%;
+      background: rgba(13, 7, 30, 0.95);
+      border-radius: 28px;
+      padding: 32px 24px;
+      border: 1px solid rgba(163, 140, 255, 0.3);
+      box-shadow: 0 0 60px rgba(125, 92, 255, 0.3);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .onboarding-emoji { font-size: 48px; }
+    .onboarding-card h2 { font-size: 22px; color: #ffe7b3; letter-spacing: 0.06em; }
+    .onboarding-card p  { font-size: 14px; line-height: 1.7; opacity: 0.9; }
+
+    .onboarding-steps {
+      display: grid;
+      gap: 8px;
+      text-align: left;
+      background: rgba(255,255,255,0.04);
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .onboarding-step { font-size: 13px; display: flex; gap: 10px; align-items: flex-start; }
+    .onboarding-step .step-icon { flex-shrink: 0; font-size: 16px; }
+
+    .btn-start {
+      background: linear-gradient(135deg, #ffcf75, #ff8acb);
+      color: #231333;
+      font-weight: 700;
+      font-size: 15px;
+      border: none;
+      border-radius: 999px;
+      padding: 14px 28px;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(255, 207, 117, 0.7);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(255,207,117,0.9); }
+
+    /* ─── CARD ─── */
+    .card {
+      background: rgba(13, 7, 30, 0.92);
+      border-radius: 22px;
+      padding: 22px 16px 18px;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(16px);
+    }
+
+    h1 { text-align: center; font-size: 20px; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 6px; }
+    .subtitle { text-align: center; font-size: 12px; opacity: 0.9; margin-bottom: 14px; }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .tab-btn {
+      border: none;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      color: #fdfbff;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #ffcf75, #ff8acb);
+      color: #251439;
+      font-weight: 600;
+      box-shadow: 0 0 14px rgba(255,207,117,0.9);
+      transform: translateY(-1px);
+    }
+
+    .section { display: none; animation: fadeIn 0.35s ease; }
+    .section.active { display: grid; gap: 10px; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0);   }
+    }
+
+    h2 { font-size: 16px; margin-bottom: 4px; color: #ffe7b3; }
+    p  { font-size: 13px; line-height: 1.6; }
+
+    .highlight {
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* ─── BREATH ─── */
+    .breath-wrapper {
+      display: grid;
+      grid-template-columns: minmax(0,1.1fr) minmax(0,1.4fr);
+      gap: 12px;
+      align-items: start;
+    }
+    .breath-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 8px 12px;
+      border-radius: 18px;
+      background: radial-gradient(circle at top, #412b77 0, #160e2b 60%);
+      border: 1px solid rgba(163,140,255,0.4);
+    }
+    .breath-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      text-align: center;
+      padding: 6px;
+      color: #ffeede;
+      box-shadow: 0 0 16px rgba(148,119,255,0.6);
+    }
+    .breath-circle.breathing { animation: breathePulse 12s ease-in-out infinite; }
+
+    @keyframes breathePulse {
+      0%   { transform: scale(1);    box-shadow: 0 0 16px rgba(148,119,255,0.6); }
+      30%  { transform: scale(1.18); box-shadow: 0 0 30px rgba(255,214,160,0.9); }
+      55%  { transform: scale(1.12); }
+      100% { transform: scale(1);    box-shadow: 0 0 14px rgba(148,119,255,0.5); }
+    }
+
+    .breath-text-main { font-size: 13px; margin-top: 4px; text-align: center; }
+    .breath-step      { font-size: 12px; opacity: 0.9; text-align: center; }
+
+    /* Compteur de cycles */
+    .cycle-counter {
+      font-size: 11px;
+      opacity: 0.75;
+      text-align: center;
+      letter-spacing: 0.06em;
+    }
+    .cycle-dots {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      margin-top: 2px;
+    }
+    .cycle-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .cycle-dot.done {
+      background: linear-gradient(135deg, #ffcf75, #ff8acb);
+      box-shadow: 0 0 6px rgba(255,207,117,0.8);
+      border-color: transparent;
+    }
+
+    /* Contrôles son */
+    .breath-sound-toggle {
+      font-size: 11px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: rgba(253,251,255,0.75);
+      border-radius: 999px;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .breath-sound-toggle.on {
+      background: rgba(255,207,117,0.12);
+      border-color: rgba(255,207,117,0.4);
+      color: #ffe7b3;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 7px 14px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 4px;
+      background: linear-gradient(135deg, #ffcf75, #ff8acb);
+      color: #231333;
+      font-weight: 600;
+      box-shadow: 0 0 10px rgba(255,207,117,0.8);
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    }
+    .btn:hover  { transform: translateY(-1px); box-shadow: 0 0 14px rgba(255,207,117,0.9); }
+    .btn:active { transform: translateY(0);    box-shadow: 0 0 8px rgba(255,207,117,0.7); opacity:0.9; }
+
+    .list { display: grid; gap: 6px; margin-top: 4px; }
+    .item { font-size: 13px; padding-left: 14px; position: relative; }
+    .item::before { content: "•"; position: absolute; left: 0; top: 0; opacity: 0.85; }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      margin-top: 4px;
+    }
+
+    /* ─── SLIDER & SUGGESTIONS DYNAMIQUES ─── */
+    .slider-row { margin-top: 4px; display: grid; gap: 4px; }
+    .slider-row label { font-size: 12px; opacity: 0.9; }
+    input[type="range"] { width: 100%; accent-color: #ffcf75; }
+    .slider-text { font-size: 12px; opacity: 0.9; }
+
+    .intensity-suggestions { display: grid; gap: 6px; margin-top: 4px; animation: fadeIn 0.3s ease; }
+
+    .suggestion-card {
+      padding: 9px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+    }
+    .suggestion-card.urgent {
+      border-color: rgba(255,138,203,0.3);
+      background: rgba(255,138,203,0.05);
+    }
+    .suggestion-card.calm {
+      border-color: rgba(148,119,255,0.25);
+      background: rgba(148,119,255,0.05);
+    }
+
+    /* ─── MANTRA ─── */
+    .mantra-box {
+      margin-top: 6px;
+      padding: 9px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: radial-gradient(circle at top, rgba(255,229,170,0.14), rgba(27,16,45,0.98));
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .mantra-title {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
+    .mantra-key { font-weight: 600; color: #ffe4a8; }
+
+    /* Affirmation rotatoire */
+    .affirmation-box {
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,207,117,0.25);
+      background: radial-gradient(circle at top left, rgba(255,207,117,0.08), rgba(13,7,30,0.95));
+      display: grid;
+      gap: 10px;
+    }
+    .affirmation-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #fff8e8;
+      font-style: italic;
+      text-align: center;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.4s ease;
+    }
+    .btn-affirmation {
+      justify-self: center;
+      border-radius: 999px;
+      border: 1px solid rgba(255,207,117,0.4);
+      background: rgba(255,207,117,0.08);
+      color: #ffe7b3;
+      font-size: 12px;
+      padding: 6px 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-affirmation:hover { background: rgba(255,207,117,0.18); }
+
+    /* ─── CORPS – SCAN CORPOREL ─── */
+    .body-scan {
+      display: grid;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .zone-card {
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.03);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.25s;
+    }
+    .zone-card.open { border-color: rgba(163,140,255,0.4); }
+
+    .zone-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      user-select: none;
+    }
+    .zone-icon { font-size: 20px; flex-shrink: 0; }
+    .zone-name { font-size: 13px; font-weight: 600; color: #ffe7b3; flex: 1; }
+    .zone-arrow {
+      font-size: 11px;
+      opacity: 0.6;
+      transition: transform 0.25s;
+    }
+    .zone-card.open .zone-arrow { transform: rotate(90deg); }
+
+    .zone-body {
+      display: none;
+      padding: 0 12px 12px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .zone-card.open .zone-body { display: block; }
+
+    .zone-check {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 11px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(163,140,255,0.35);
+      background: rgba(163,140,255,0.08);
+      color: #c8b8ff;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .zone-check.checked {
+      background: rgba(163,140,255,0.22);
+      border-color: rgba(163,140,255,0.6);
+      color: #e0d5ff;
+    }
+    .zone-check:hover { background: rgba(163,140,255,0.15); }
+
+    .scan-progress {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+    .scan-bar-bg {
+      flex: 1;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+    .scan-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #a38cff, #ffcf75);
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* ─── JOURNAL ─── */
+    .journal-box { margin-top: 6px; display: grid; gap: 6px; }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(5,3,15,0.9);
+      color: #fdfbff;
+      font-size: 13px;
+      padding: 8px 9px;
+      line-height: 1.5;
+    }
+    textarea::placeholder { color: rgba(255,255,255,0.4); }
+
+    .small-note { font-size: 11px; opacity: 0.8; }
+    .inner-footer { margin-top: 10px; font-size: 11px; opacity: 0.75; text-align: center; }
+
+    /* ─── LW FOOTER ─── */
+    .lw-footer {
+      width: 100%;
+      background: rgba(8,5,20,0.85);
+      border-top: 1px solid rgba(163,140,255,0.2);
+      border-radius: 18px;
+      backdrop-filter: blur(12px);
+      padding: 20px 16px;
+    }
+    .lw-footer-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .lw-footer-brand h3 {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      background: linear-gradient(135deg, #ffcf75, #ff8acb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+    .lw-footer-brand p { font-size: 11px; opacity: 0.7; max-width: 200px; }
+    .lw-footer-links { display: flex; flex-direction: column; gap: 6px; }
+    .lw-footer-links a { font-size: 12px; color: rgba(253,251,255,0.8); text-decoration: none; transition: color 0.2s; }
+    .lw-footer-links a:hover { color: #ffcf75; }
+    .lw-footer-legal { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+    .lw-footer-legal p { font-size: 11px; opacity: 0.6; }
+    .lw-footer-signature { font-style: italic; }
+    .btn-replay {
+      margin-top: 6px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,207,117,0.3);
+      color: #ffe7b3;
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 5px 12px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-replay:hover { background: rgba(255,207,117,0.12); border-color: rgba(255,207,117,0.6); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 640px) {
+      .breath-wrapper { grid-template-columns: minmax(0,1fr); }
+      .breath-box { order: -1; }
+      .card { padding: 18px 12px 16px; }
+      .lw-footer-container { flex-direction: column; }
+      .lw-footer-legal { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NIGHT MODE BUTTON -->
+  <button class="night-toggle" id="nightToggle" title="Mode nuit profond">🌑</button>
+
+  <!-- ONBOARDING -->
+  <div id="onboarding">
+    <div class="onboarding-card">
+      <div class="onboarding-emoji">🌙</div>
+      <h2>Bienvenue dans ton Espace ORAH</h2>
+      <p>Un espace doux pour les moments où tout est trop. Tu n'as rien à décider ici, juste respirer et revenir à toi.</p>
+      <div class="onboarding-steps">
+        <div class="onboarding-step"><span class="step-icon">🌬</span><span><strong>Respire</strong> : suis le cercle pour calmer la vague</span></div>
+        <div class="onboarding-step"><span class="step-icon">🪴</span><span><strong>Reviens au présent</strong> : ancre-toi dans le maintenant</span></div>
+        <div class="onboarding-step"><span class="step-icon">✨</span><span><strong>Mantra ORAH</strong> : un fil doux vers ta lumière</span></div>
+        <div class="onboarding-step"><span class="step-icon">🫀</span><span><strong>Corps</strong> : scan et relâchement en 4 zones</span></div>
+        <div class="onboarding-step"><span class="step-icon">🖊</span><span><strong>Journal éclair</strong> : vide le trop-plein en quelques mots</span></div>
+      </div>
+      <button class="btn-start" id="startBtn">Je suis prête ✨</button>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div class="shell">
+    <div class="card">
+      <h1>ESPACE ORAH</h1>
+      <div class="subtitle"><span>Quand tout est trop, tu peux faire une pause ici.</span></div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-target="tab-respire">🌬 Respire</button>
+        <button class="tab-btn" data-target="tab-present">🪴 Présent</button>
+        <button class="tab-btn" data-target="tab-mantra">✨ Mantra</button>
+        <button class="tab-btn" data-target="tab-corps">🫀 Corps</button>
+        <button class="tab-btn" data-target="tab-journal">🖊 Journal</button>
+      </div>
+
+      <!-- TAB 1 : RESPIRATION -->
+      <section id="tab-respire" class="section active">
+        <h2>🌬 Respiration pour calmer la vague</h2>
+        <p class="highlight">
+          Tu n'as rien à décider maintenant. Pendant quelques instants, ton seul travail est
+          <strong>de respirer</strong> et de laisser ton corps redescendre.
+        </p>
+        <div class="breath-wrapper">
+          <div class="breath-box">
+            <div id="breathCircle" class="breath-circle">
+              <span id="breathLabel">Clique sur «&nbsp;Lancer&nbsp;»</span>
+            </div>
+            <div id="breathMain" class="breath-text-main">Cycle 4–2–6</div>
+            <div id="breathStep" class="breath-step">Inspire 4s • Retiens 2s • Expire 6s</div>
+            <div class="cycle-counter">
+              <span id="cycleText">0 / 5 cycles</span>
+              <div class="cycle-dots" id="cycleDots"></div>
+            </div>
+            <button id="breathToggle" class="btn">Lancer</button>
+            <button class="breath-sound-toggle" id="soundToggle">🔇 Son désactivé</button>
+          </div>
+          <div>
+            <p class="pill">Mode d'emploi, à lire une fois, puis à sentir.</p>
+            <div class="list">
+              <div class="item">Pose tes pieds au sol. Relâche tes épaules. Tu peux fermer les yeux si tu veux.</div>
+              <div class="item">Suis simplement les indications : <em>inspire – retiens – expire</em>, sans chercher la perfection.</div>
+              <div class="item">Si une pensée arrive, ce n'est pas grave. Tu la laisses passer, comme un nuage.</div>
+              <div class="item">Fais 5 cycles complets. Les points s'allument au fur et à mesure 🌟</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2 : PRÉSENT -->
+      <section id="tab-present" class="section">
+        <h2>🪴 Revenir dans « maintenant »</h2>
+        <p class="highlight">
+          Quand tu es en surcharge émotionnelle, ton cerveau part très loin. Ici, on revient à quelque chose de simple : <strong>un présent respirable</strong>.
+        </p>
+        <div class="slider-row">
+          <label for="intensity">À quel point c'est intense en ce moment ? <strong id="intensityValue">7</strong>/10</label>
+          <input id="intensity" type="range" min="0" max="10" value="7" />
+          <div id="intensityText" class="slider-text"></div>
+        </div>
+        <div id="intensitySuggestions" class="intensity-suggestions"></div>
+        <div class="mantra-box">
+          <div class="mantra-title">Mini-ancrage</div>
+          <p>
+            <span class="mantra-key">Ici & maintenant :</span> je suis en sécurité dans cette pièce.
+            Je respire. Mon cœur a le droit d'être plein. Je n'ai pas à choisir entre deux vies dans cette
+            seconde. Je fais juste un pas de douceur vers moi.
+          </p>
+        </div>
+      </section>
+
+      <!-- TAB 3 : MANTRA -->
+      <section id="tab-mantra" class="section">
+        <h2>✨ Mantra ORAH : quand le mental s'emballe</h2>
+        <p class="highlight">
+          Quand tout doute, tu peux revenir à un seul mot : <strong>ORAH</strong> (אורה) — lumière, clarté intérieure.
+        </p>
+
+        <div class="affirmation-box">
+          <div class="mantra-title">Affirmation du moment</div>
+          <div class="affirmation-text" id="affirmationText"></div>
+          <button class="btn-affirmation" id="newAffirmation">✨ Autre affirmation</button>
+        </div>
+
+        <div class="mantra-box" style="margin-top:8px;">
+          <div class="mantra-title">Mantra complet</div>
+          <p>
+            Je marche vers ma lumière. <br />
+            Je crée ma clarté. <br />
+            Je protège ma paix. <br />
+            Je me place là où mon âme respire. <br />
+            <span class="mantra-key">Orah.</span>
+          </p>
+        </div>
+        <p class="small-note" style="margin-top:6px;">
+          Tu peux murmurer le mantra sur l'expiration. Pas besoin de force, juste un fil doux qui te relie à toi.
+        </p>
+      </section>
+
+      <!-- TAB 4 : CORPS -->
+      <section id="tab-corps" class="section">
+        <h2>🫀 Scan corporel : relâcher zone par zone</h2>
+        <p class="highlight">
+          Le stress se loge dans le corps avant même qu'on le réalise. Prends 2 minutes pour <strong>sentir et relâcher</strong> chaque zone, doucement.
+        </p>
+
+        <div class="scan-progress">
+          <span id="scanProgressText">0 zone relâchée</span>
+          <div class="scan-bar-bg"><div class="scan-bar-fill" id="scanBarFill"></div></div>
+        </div>
+
+        <div class="body-scan">
+
+          <div class="zone-card" id="zone-machoires">
+            <div class="zone-header" onclick="toggleZone('zone-machoires')">
+              <span class="zone-icon">😬</span>
+              <span class="zone-name">Mâchoires & visage</span>
+              <span class="zone-arrow">▶</span>
+            </div>
+            <div class="zone-body">
+              <p>Sens si tes dents sont serrées. Entrouvre légèrement la bouche. Laisse la mâchoire tomber doucement vers le bas, sans forcer.</p>
+              <p style="margin-top:6px;">Relâche les muscles autour des yeux. Déplisse le front. Imagine que ton visage devient doux comme celui de quelqu'un qui dort.</p>
+              <button class="zone-check" data-zone="zone-machoires" onclick="checkZone(this)">✓ Zone relâchée</button>
+            </div>
+          </div>
+
+          <div class="zone-card" id="zone-epaules">
+            <div class="zone-header" onclick="toggleZone('zone-epaules')">
+              <span class="zone-icon">🫙</span>
+              <span class="zone-name">Épaules & nuque</span>
+              <span class="zone-arrow">▶</span>
+            </div>
+            <div class="zone-body">
+              <p>Monte les épaules vers les oreilles, retiens 3 secondes, puis laisse-les tomber complètement. Fais-le deux fois si tu veux.</p>
+              <p style="margin-top:6px;">Tourne lentement la tête à droite, puis à gauche. Reviens au centre. Laisse le poids de ta tête être porté par ton cou sans effort.</p>
+              <button class="zone-check" data-zone="zone-epaules" onclick="checkZone(this)">✓ Zone relâchée</button>
+            </div>
+          </div>
+
+          <div class="zone-card" id="zone-ventre">
+            <div class="zone-header" onclick="toggleZone('zone-ventre')">
+              <span class="zone-icon">🌊</span>
+              <span class="zone-name">Ventre & poitrine</span>
+              <span class="zone-arrow">▶</span>
+            </div>
+            <div class="zone-body">
+              <p>Pose une main sur ton ventre. Sens-tu que tu retiens quelque chose là ? Prends une grande inspiration, gonfle le ventre, et à l'expiration laisse tout partir.</p>
+              <p style="margin-top:6px;">Imagine une vague chaude qui part de la poitrine et descend jusqu'au nombril à chaque expiration.</p>
+              <button class="zone-check" data-zone="zone-ventre" onclick="checkZone(this)">✓ Zone relâchée</button>
+            </div>
+          </div>
+
+          <div class="zone-card" id="zone-mains">
+            <div class="zone-header" onclick="toggleZone('zone-mains')">
+              <span class="zone-icon">🤲</span>
+              <span class="zone-name">Mains & bras</span>
+              <span class="zone-arrow">▶</span>
+            </div>
+            <div class="zone-body">
+              <p>Serre les poings fort pendant 5 secondes, puis ouvre les mains complètement, doigts écartés. Sens la différence.</p>
+              <p style="margin-top:6px;">Pose tes mains à plat sur tes cuisses, paumes vers le haut. C'est la position de la réception : tu n'as rien à tenir, rien à contrôler dans cette seconde.</p>
+              <button class="zone-check" data-zone="zone-mains" onclick="checkZone(this)">✓ Zone relâchée</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TAB 5 : JOURNAL -->
+      <section id="tab-journal" class="section">
+        <h2>🖊 Journal éclair : vider le trop plein</h2>
+        <p class="highlight">
+          Ici tu peux déposer ce qui tourne en boucle dans ta tête. Tu n'as pas besoin de bien écrire.
+          On vise juste : <strong>sortir les pensées du mental pour qu'elles pèsent moins</strong>.
+        </p>
+        <div class="journal-box">
+          <textarea id="journal" placeholder="Écris ici ce qui t'étouffe, même si c'est contradictoire, même si c'est brouillon. Personne ne le lit, c'est seulement pour toi."></textarea>
+          <p class="small-note">Le texte est enregistré <strong>dans ton navigateur uniquement</strong> (localStorage).</p>
+          <button id="clearJournal" class="btn" style="align-self:flex-start;">Vider la page du jour</button>
+        </div>
+      </section>
+
+      <div class="inner-footer">
+        Tu as le droit de ne pas savoir. Tu as le droit d'être fatiguée.<br />
+        Tu peux toujours revenir ici, respirer, puis seulement ensuite réfléchir.
+      </div>
+    </div>
+
+    <!-- FOOTER LABOWEB -->
+    <footer class="lw-footer">
+      <div class="lw-footer-container">
+        <div class="lw-footer-brand">
+          <h3>laboWeb</h3>
+          <p>Des outils simples pour apaiser, comprendre et avancer.</p>
+        </div>
+        <div class="lw-footer-links">
+          <a href="https://laboweb.tech" target="_blank">🌐 Site web</a>
+          <a href="https://paypal.me/JohannaCastagna" target="_blank">💛 Soutenir ce projet</a>
+        </div>
+        <div class="lw-footer-legal">
+          <p>© 2026 laboWeb</p>
+          <p class="lw-footer-signature">Créé avec 💛 par Johanna</p>
+          <button class="btn-replay" id="replayOnboardingBtn">✨ Revoir l'intro</button>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // ─── NIGHT MODE ───
+    const nightBtn = document.getElementById("nightToggle");
+    let nightOn = false;
+    nightBtn.addEventListener("click", () => {
+      nightOn = !nightOn;
+      document.body.classList.toggle("night-mode", nightOn);
+      nightBtn.textContent = nightOn ? "🌕" : "🌑";
+      nightBtn.title = nightOn ? "Désactiver le mode nuit" : "Mode nuit profond";
+    });
+
+    // ─── ONBOARDING ───
+    const ONBOARDING_KEY = "orah_onboarding_done";
+    const onboardingEl   = document.getElementById("onboarding");
+
+    function showOnboarding() {
+      onboardingEl.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+    function hideOnboarding() {
+      onboardingEl.classList.add("hidden");
+      document.body.style.overflow = "";
+      localStorage.setItem(ONBOARDING_KEY, "1");
+    }
+
+    document.getElementById("startBtn").addEventListener("click", hideOnboarding);
+    document.getElementById("replayOnboardingBtn").addEventListener("click", showOnboarding);
+    if (!localStorage.getItem(ONBOARDING_KEY)) showOnboarding();
+
+    // ─── ONGLETS ───
+    document.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const target = btn.getAttribute("data-target");
+        document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".section").forEach((s) => s.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(target).classList.add("active");
+      });
+    });
+
+    // ─── SONS (Web Audio API) ───
+    let soundEnabled = false;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playTone(freq, duration, type = "sine", vol = 0.08) {
+      if (!soundEnabled) return;
+      const osc  = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type      = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 0.05);
+      gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + duration);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + duration + 0.05);
+    }
+
+    // Sons par phase : inspire → note douce haute, pause → silence court, expire → note grave douce
+    const phaseSounds = [
+      () => playTone(528, 0.6, "sine", 0.07),   // inspire
+      () => playTone(396, 0.3, "sine", 0.04),   // pause
+      () => playTone(396, 1.0, "sine", 0.06),   // expire
+    ];
+
+    const soundToggle = document.getElementById("soundToggle");
+    soundToggle.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      soundToggle.textContent = soundEnabled ? "🔔 Son activé" : "🔇 Son désactivé";
+      soundToggle.classList.toggle("on", soundEnabled);
+      if (soundEnabled && audioCtx.state === "suspended") audioCtx.resume();
+    });
+
+    // ─── RESPIRATION 4-2-6 + COMPTEUR ───
+    const breathCircle = document.getElementById("breathCircle");
+    const breathLabel  = document.getElementById("breathLabel");
+    const breathMain   = document.getElementById("breathMain");
+    const breathStep   = document.getElementById("breathStep");
+    const breathToggle = document.getElementById("breathToggle");
+    const cycleText    = document.getElementById("cycleText");
+    const cycleDots    = document.getElementById("cycleDots");
+
+    const TOTAL_CYCLES = 5;
+    let cycleCount = 0;
+
+    // Construire les 5 points
+    for (let i = 0; i < TOTAL_CYCLES; i++) {
+      const dot = document.createElement("div");
+      dot.className = "cycle-dot";
+      dot.id = "dot-" + i;
+      cycleDots.appendChild(dot);
+    }
+
+    function updateCycleDots() {
+      cycleText.textContent = `${cycleCount} / ${TOTAL_CYCLES} cycles`;
+      for (let i = 0; i < TOTAL_CYCLES; i++) {
+        document.getElementById("dot-" + i).classList.toggle("done", i < cycleCount);
+      }
+    }
+
+    const steps = [
+      { text: "Inspire doucement par le nez (4s)",   main: "Inspire…", duration: 4000, phase: 0 },
+      { text: "Garde l'air quelques instants (2s)",  main: "Pause…",   duration: 2000, phase: 1 },
+      { text: "Expire lentement par la bouche (6s)", main: "Expire…",  duration: 6000, phase: 2 },
+    ];
+
+    let breatheRunning = false, breatheIndex = 0, breatheTimer = null;
+
+    function runBreathCycle() {
+      const step = steps[breatheIndex];
+      breathLabel.textContent = step.main;
+      breathStep.textContent  = step.text;
+      phaseSounds[step.phase]();
+
+      breatheTimer = setTimeout(() => {
+        breatheIndex++;
+        if (breatheIndex >= steps.length) {
+          breatheIndex = 0;
+          if (cycleCount < TOTAL_CYCLES) {
+            cycleCount++;
+            updateCycleDots();
+          }
+          if (cycleCount >= TOTAL_CYCLES) {
+            // Objectif atteint !
+            breatheRunning = false;
+            breathToggle.textContent = "Recommencer";
+            breathMain.textContent   = "🌟 Bravo ! 5 cycles complétés.";
+            breathLabel.textContent  = "✓";
+            breathStep.textContent   = "Ton corps a eu le temps de redescendre.";
+            breathCircle.classList.remove("breathing");
+            clearTimeout(breatheTimer);
+            return;
+          }
+        }
+        if (breatheRunning) runBreathCycle();
+      }, step.duration);
+    }
+
+    breathToggle.addEventListener("click", () => {
+      if (!breatheRunning) {
+        breatheRunning = true;
+        cycleCount     = 0;
+        breatheIndex   = 0;
+        updateCycleDots();
+        breathToggle.textContent = "Pause";
+        breathMain.textContent   = "Tu suis simplement le rythme, sans forcer.";
+        breathCircle.classList.add("breathing");
+        clearTimeout(breatheTimer);
+        runBreathCycle();
+      } else {
+        breatheRunning = false;
+        breathToggle.textContent = "Reprendre";
+        breathMain.textContent   = "Pause. Tu peux recommencer quand tu veux.";
+        breathLabel.textContent  = "En pause";
+        breathStep.textContent   = "Quand tu seras prête, relance un cycle.";
+        breathCircle.classList.remove("breathing");
+        clearTimeout(breatheTimer);
+      }
+    });
+
+    // ─── SLIDER INTENSITÉ + SUGGESTIONS DYNAMIQUES ───
+    const intensity            = document.getElementById("intensity");
+    const intensityText        = document.getElementById("intensityText");
+    const intensityValue       = document.getElementById("intensityValue");
+    const intensitySuggestions = document.getElementById("intensitySuggestions");
+
+    const suggestionsByLevel = {
+      low: [
+        { type: "calm", text: "✨ Tu es dans un bon espace. Profites-en pour te ressourcer : une respiration douce, un verre d'eau, un moment sans écran." },
+        { type: "calm", text: "🌿 C'est le bon moment pour noter quelque chose de positif dans ton journal — une petite victoire du jour." }
+      ],
+      mid: [
+        { type: "calm", text: "🌬 Commence par 3 cycles de respiration avant de prendre une décision. Ton système nerveux a besoin d'un peu de temps." },
+        { type: "calm", text: "🪴 Ce que tu ressens est valide. Tu n'as pas à te justifier. Prends le temps de t'ancrer avant d'agir." }
+      ],
+      high: [
+        { type: "urgent", text: "⚠️ C'est intense. Mets en pause tout ce qui peut attendre. Aucune décision importante maintenant." },
+        { type: "urgent", text: "🫀 Ressens tes pieds sur le sol. C'est réel, c'est maintenant, tu es en sécurité dans cet espace." },
+        { type: "calm",   text: "💛 Demander de l'aide à quelqu'un de confiance est une force, pas une faiblesse." }
+      ],
+      max: [
+        { type: "urgent", text: "🆘 Tout est trop. Ton seul travail maintenant : respirer. Une inspiration à la fois. Rien d'autre." },
+        { type: "urgent", text: "📞 Si la vague est trop forte, appelle quelqu'un. Tu mérites d'être soutenue." },
+        { type: "urgent", text: "🌊 Cette intensité va passer. Elle passe toujours. Tu n'as pas à la traverser seule." }
+      ]
+    };
+
+    function getLevel(v) {
+      if (v <= 2)  return "low";
+      if (v <= 5)  return "mid";
+      if (v <= 7)  return "high";
+      return "max";
+    }
+
+    function updateIntensity(value) {
+      const v = Number(value);
+      intensityValue.textContent = v;
+      intensityText.textContent =
+        v <= 2 ? "Ça va à peu près. Tu peux t'offrir un moment de douceur." :
+        v <= 5 ? "C'est inconfortable, mais gérable. Quelques respirations vont aider." :
+        v <= 7 ? "C'est vraiment intense. Pas de décision importante maintenant." :
+                 "C'est au maximum. Respire, ancre-toi, demande de l'aide si besoin.";
+
+      const suggestions = suggestionsByLevel[getLevel(v)];
+      intensitySuggestions.innerHTML = "";
+      suggestions.forEach(s => {
+        const card = document.createElement("div");
+        card.className = `suggestion-card ${s.type}`;
+        card.textContent = s.text;
+        intensitySuggestions.appendChild(card);
+      });
+    }
+
+    intensity.addEventListener("input", (e) => updateIntensity(e.target.value));
+    updateIntensity(intensity.value);
+
+    // ─── AFFIRMATIONS ROTATOIRES ───
+    const affirmations = [
+      "Je n'ai pas besoin de tout comprendre aujourd'hui. La clarté viendra.",
+      "Je peux rester loyale envers moi-même, même si ça fait peur.",
+      "Je mérite la paix que je cherche pour les autres.",
+      "Je suis autorisée à changer d'avis. Je suis autorisée à évoluer.",
+      "Mon ressenti est une information, pas une faiblesse.",
+      "Je peux avancer à mon rythme, sans me comparer à personne.",
+      "Il n'y a pas de bonne réponse à trouver dans cette minute. Juste respirer.",
+      "Je peux être brisée et lumineuse en même temps. Orah.",
+      "Je me fais confiance pour traverser ceci, comme j'ai traversé tout le reste.",
+      "Prendre soin de moi n'est pas de l'égoïsme. C'est une nécessité.",
+      "Je peux dire non. Je peux dire stop. Je peux dire 'pas maintenant'.",
+      "Chaque souffle est un recommencement. Je suis déjà en train de guérir.",
+      "Je ne dois rien prouver à personne dans cette seconde précise.",
+      "Mon âme sait où elle veut aller. Je lui fais confiance.",
+      "La douceur envers moi-même est la chose la plus courageuse que je puisse faire."
+    ];
+
+    let lastAffirmationIdx = -1;
+
+    function showNewAffirmation() {
+      let idx;
+      do { idx = Math.floor(Math.random() * affirmations.length); }
+      while (idx === lastAffirmationIdx);
+      lastAffirmationIdx = idx;
+      const el = document.getElementById("affirmationText");
+      el.style.opacity = "0";
+      setTimeout(() => {
+        el.textContent = affirmations[idx];
+        el.style.opacity = "1";
+        el.style.transition = "opacity 0.4s ease";
+      }, 150);
+    }
+
+    document.getElementById("newAffirmation").addEventListener("click", showNewAffirmation);
+    showNewAffirmation();
+
+    // ─── SCAN CORPOREL ───
+    const zonesDone = new Set();
+
+    function toggleZone(id) {
+      const card = document.getElementById(id);
+      card.classList.toggle("open");
+    }
+
+    function checkZone(btn) {
+      const zoneId = btn.getAttribute("data-zone");
+      btn.classList.toggle("checked");
+      if (btn.classList.contains("checked")) {
+        btn.textContent = "✓ Relâchée 💜";
+        zonesDone.add(zoneId);
+      } else {
+        btn.textContent = "✓ Zone relâchée";
+        zonesDone.delete(zoneId);
+      }
+      updateScanProgress();
+    }
+
+    function updateScanProgress() {
+      const n = zonesDone.size;
+      document.getElementById("scanProgressText").textContent =
+        n === 0 ? "0 zone relâchée" :
+        n === 4 ? "✨ Tout le corps relâché !" :
+        `${n} zone${n > 1 ? "s" : ""} relâchée${n > 1 ? "s" : ""}`;
+      document.getElementById("scanBarFill").style.width = (n / 4 * 100) + "%";
+    }
+
+    // ─── JOURNAL ───
+    const journal     = document.getElementById("journal");
+    const STORAGE_KEY = "journal_surcharge_johanna";
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) journal.value = saved;
+    journal.addEventListener("input", () => localStorage.setItem(STORAGE_KEY, journal.value));
+    document.getElementById("clearJournal").addEventListener("click", () => {
+      if (confirm("Vider le texte de ce journal ?")) {
+        journal.value = "";
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    });
+  </script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js"));
+    }
+  </script>
+</body>
+</html>
